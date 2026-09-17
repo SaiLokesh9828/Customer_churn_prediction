@@ -1,0 +1,43 @@
+data:
+  raw_path: "data/raw/telco_churn.csv"
+  processed_path: "data/processed/churn_processed.csv"
+  target_column: "Churn"
+  test_size: 0.2
+  val_size: 0.1
+  random_state: 42
+
+features:
+  id_column: "customerID"
+  numeric_columns:
+    - tenure
+    - MonthlyCharges
+    - TotalCharges
+  categorical_columns:
+    - gender
+    - SeniorCitizen
+    - Partner
+    - Dependents
+    - PhoneService
+    - MultipleLines
+    - InternetService
+    - OnlineSecurity
+    - OnlineBackup
+    - DeviceProtection
+    - TechSupport
+    - StreamingTV
+    - StreamingMovies
+    - Contract
+    - PaperlessBilling
+    - PaymentMethod
+
+training:
+  cv_folds: 5
+  scoring_metric: "f1"
+  models_dir: "models"
+  n_trials_optuna: 30
+
+paths:
+  best_model_path: "models/best_model.pkl"
+  preprocessor_path: "models/preprocessor.pkl"
+  metrics_path: "models/metrics.json"
+  feature_names_path: "models/feature_names.json"
