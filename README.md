@@ -1,139 +1,880 @@
-# 📉 Customer Churn Prediction
+# \# 📉 Customer Churn Prediction
 
-An end-to-end machine learning pipeline that predicts telecom customer churn,
-compares multiple algorithms, and explains individual predictions with SHAP.
-Deployed as an interactive Streamlit app.
+# 
 
-## Overview
+# An end-to-end Machine Learning project that predicts whether a telecom customer is likely to churn and provides an interpretable churn-risk score.
 
-Customer acquisition costs 5-25x more than retention. This project builds a
-model that flags at-risk customers *before* they cancel, so a retention team
-can intervene early, and explains *why* each customer is flagged so the
-outreach can be targeted (e.g., offer a contract upgrade vs. a discount).
+# 
 
-**Real-world use case:** A telecom's customer success team runs this model
-weekly against active accounts and prioritizes outreach by churn probability.
+# The project covers the complete ML lifecycle:
 
-## Features
+# 
 
-- Leakage-safe preprocessing (train/val/test split before any fitting)
-- Domain-driven feature engineering (tenure buckets, service count, spend deviation)
-- Baseline (Logistic Regression) vs. tuned Random Forest, XGBoost, LightGBM
-- Class-imbalance handling (`class_weight`, `scale_pos_weight`)
-- Hyperparameter tuning via `RandomizedSearchCV` with stratified 5-fold CV
-- Model selection by validation F1, final unbiased evaluation on held-out test set
-- SHAP-based global and per-customer explainability
-- Interactive Streamlit app for single-customer predictions
+# \*\*Data preprocessing → Feature engineering → Model training → Hyperparameter tuning → Evaluation → SHAP explainability → Streamlit deployment\*\*
 
-## Dataset
+# 
 
-IBM Telco Customer Churn dataset (public, Kaggle: `blastchar/telco-customer-churn`),
-~7,043 customers, 21 columns. See `data/README.md` for setup instructions.
+# \---
 
-## Architecture / Pipeline
+# 
 
-```
-Raw CSV
-   │
-   ▼
-data_preprocessing.py  →  clean types, fix TotalCharges blanks, stratified train/val/test split
-   │
-   ▼
-feature_engineering.py →  derived features + ColumnTransformer (StandardScaler + OneHotEncoder)
-   │
-   ▼
-train.py                →  Logistic Regression baseline + tuned RF / XGBoost / LightGBM
-   │                        (RandomizedSearchCV, 5-fold stratified CV, F1-scored)
-   ▼
-evaluate.py              →  final test-set metrics, confusion matrix, ROC curve
-   │
-   ▼
-explain.py                →  SHAP global + per-customer explanations
-   │
-   ▼
-app/streamlit_app.py       →  interactive prediction UI
-```
+# \## 🚀 Live Project
 
-## Project Structure
+# 
 
-```
-customer-churn-prediction/
-├── app/
-│   └── streamlit_app.py
-├── data/
-│   ├── raw/                # place telco_churn.csv here
-│   ├── processed/          # generated: train/val/test.csv
-│   └── README.md
-├── models/                 # generated: best_model.pkl, preprocessor.pkl, metrics.json,
-│                            #            confusion_matrix.png, roc_curve.png, shap_*.png
-├── src/
-│   ├── data_preprocessing.py
-│   ├── feature_engineering.py
-│   ├── train.py
-│   ├── evaluate.py
-│   └── explain.py
-├── tests/
-│   └── test_feature_engineering.py
-├── config.yaml
-├── requirements.txt
-└── README.md
-```
+# The application is built using \*\*Streamlit\*\* and allows users to enter customer account and service details to receive a churn-risk prediction.
 
-## Installation
+# 
 
-```bash
-git clone <repo-url>
-cd customer-churn-prediction
-python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```
+# \### Prediction Output
 
-Download the dataset per `data/README.md` and place it at `data/raw/telco_churn.csv`.
+# 
 
-## Usage
+# The application provides:
 
-```bash
-python src/data_preprocessing.py   # clean + split
-python src/train.py                # train, tune, compare, save best model
-python src/evaluate.py             # final test-set metrics + plots
-python src/explain.py              # SHAP explainability artifacts
-streamlit run app/streamlit_app.py # launch the prediction app
-pytest tests/                      # run unit tests
-```
+# 
 
-## Screenshots
+# \* Churn probability
 
-`[Add: app/screenshots/prediction_form.png]`
-`[Add: app/screenshots/prediction_result.png]`
-`[Add: models/confusion_matrix.png]`
-`[Add: models/shap_summary.png]`
+# \* Low / Medium / High risk interpretation
 
-## Results
+# \* Model confidence
 
-Exact metrics depend on the random seed and the specific Kaggle CSV revision
-used. After running the pipeline, results are written to
-`models/metrics.json` (validation) and `models/test_metrics.json` (final
-test set). Report your own run's numbers here, e.g.:
+# \* Customer-level prediction
 
-- Best model: `[BEST_MODEL_NAME]`
-- Test F1: `[TEST_F1]`
-- Test ROC-AUC: `[TEST_ROC_AUC]`
+# 
 
-*(Placeholders are intentional — this README does not fabricate results.)*
+# > The predicted probability is a model estimate and should be used alongside business judgment for retention decisions.
 
-## Future Improvements
+# 
 
-- Add SMOTE/ADASYN comparison against class-weighting for imbalance handling
-- Track experiments with MLflow instead of a single `metrics.json`
-- Add a FastAPI backend for batch scoring alongside the Streamlit UI
-- Calibrate probabilities (Platt scaling) if used for threshold-based alerting
-- Add monitoring for feature/label drift in production
+# \---
 
-## Technologies
+# 
 
-Python · Pandas · NumPy · Scikit-learn · XGBoost · LightGBM · SHAP · Matplotlib ·
-Seaborn · Streamlit · joblib · PyYAML
+# \## 🎯 Problem Statement
 
-## Author
+# 
 
-`[Your Name]` — `[email / LinkedIn / GitHub]`
+# Customer churn is a major challenge for telecom companies.
+
+# 
+
+# The objective of this project is to build a machine learning system that can:
+
+# 
+
+# 1\. Predict whether a customer is likely to churn.
+
+# 2\. Estimate the probability of churn.
+
+# 3\. Identify important factors influencing churn.
+
+# 4\. Provide an easy-to-use interface for customer-level predictions.
+
+# 
+
+# This can help businesses identify high-risk customers and design targeted retention strategies.
+
+# 
+
+# \---
+
+# 
+
+# \## 📊 Dataset
+
+# 
+
+# The project uses the \*\*IBM Telco Customer Churn dataset\*\*.
+
+# 
+
+# The dataset contains customer demographic information, account information, subscribed services, contract details, payment methods, and churn labels.
+
+# 
+
+# \### Important Features
+
+# 
+
+# Examples include:
+
+# 
+
+# \* Gender
+
+# \* Senior Citizen
+
+# \* Partner
+
+# \* Dependents
+
+# \* Tenure
+
+# \* Phone Service
+
+# \* Internet Service
+
+# \* Online Security
+
+# \* Online Backup
+
+# \* Device Protection
+
+# \* Tech Support
+
+# \* Streaming Services
+
+# \* Contract
+
+# \* Paperless Billing
+
+# \* Payment Method
+
+# \* Monthly Charges
+
+# \* Total Charges
+
+# 
+
+# \### Target
+
+# 
+
+# `Churn`
+
+# 
+
+# Where:
+
+# 
+
+# \* `Yes` → Customer churned
+
+# \* `No` → Customer stayed
+
+# 
+
+# \---
+
+# 
+
+# \## 🧠 Machine Learning Approach
+
+# 
+
+# \### 1. Data Preprocessing
+
+# 
+
+# The preprocessing pipeline handles:
+
+# 
+
+# \* Missing values
+
+# \* Categorical variables
+
+# \* Numerical variables
+
+# \* Data type conversion
+
+# \* Train/validation/test splitting
+
+# 
+
+# The preprocessing steps are implemented using a reusable preprocessing pipeline.
+
+# 
+
+# \---
+
+# 
+
+# \### 2. Feature Engineering
+
+# 
+
+# Additional features are created from the original customer information to improve model performance.
+
+# 
+
+# The feature engineering pipeline is applied consistently during both training and prediction.
+
+# 
+
+# \---
+
+# 
+
+# \### 3. Models
+
+# 
+
+# The following models are evaluated:
+
+# 
+
+# | Model               | Purpose                           |
+
+# | ------------------- | --------------------------------- |
+
+# | Logistic Regression | Baseline model                    |
+
+# | Random Forest       | Non-linear ensemble model         |
+
+# | XGBoost             | Gradient boosting model           |
+
+# | LightGBM            | Efficient gradient boosting model |
+
+# 
+
+# \---
+
+# 
+
+# \## ⚙️ Hyperparameter Tuning
+
+# 
+
+# Model hyperparameters are optimized using:
+
+# 
+
+# \*\*RandomizedSearchCV\*\*
+
+# 
+
+# Cross-validation is used during model selection to reduce the risk of overfitting to a single validation split.
+
+# 
+
+# \---
+
+# 
+
+# \## 📈 Model Performance
+
+# 
+
+# The currently selected model is:
+
+# 
+
+# \### 🌲 Random Forest
+
+# 
+
+# \*\*Validation F1 Score: 0.661\*\*
+
+# 
+
+# The model was selected based on validation performance and is used by the Streamlit application for customer-level predictions.
+
+# 
+
+# > Model performance can vary depending on preprocessing, random seeds, and the training configuration.
+
+# 
+
+# \---
+
+# 
+
+# \## 🔍 Model Explainability
+
+# 
+
+# The project uses \*\*SHAP (SHapley Additive exPlanations)\*\* to understand model predictions.
+
+# 
+
+# Two explainability artifacts are generated:
+
+# 
+
+# \### Global Feature Importance
+
+# 
+
+# `models/shap\_summary.png`
+
+# 
+
+# Shows which features have the greatest overall influence on churn predictions.
+
+# 
+
+# \### Individual Customer Explanation
+
+# 
+
+# `models/shap\_single\_customer.png`
+
+# 
+
+# Shows how individual features contribute to the prediction for a specific customer.
+
+# 
+
+# This makes the model more interpretable and useful for business decision-making.
+
+# 
+
+# \---
+
+# 
+
+# \## 🖥️ Streamlit Application
+
+# 
+
+# The project includes an interactive Streamlit application.
+
+# 
+
+# Users can enter customer information such as:
+
+# 
+
+# \* Demographics
+
+# \* Tenure
+
+# \* Contract
+
+# \* Internet service
+
+# \* Payment method
+
+# \* Monthly charges
+
+# \* Additional subscribed services
+
+# 
+
+# The application then generates a churn-risk prediction.
+
+# 
+
+# \### Example
+
+# 
+
+# ```text
+
+# Predicted churn probability: 34.9%
+
+# 
+
+# Risk Level: Low churn risk
+
+# ```
+
+# 
+
+# The probability represents the model's estimated likelihood, not a guarantee of customer behavior.
+
+# 
+
+# \---
+
+# 
+
+# \# 📁 Project Structure
+
+# 
+
+# ```text
+
+# customer-churn-prediction/
+
+# │
+
+# ├── app/
+
+# │   └── streamlit\_app.py
+
+# │
+
+# ├── data/
+
+# │   ├── raw/
+
+# │   └── processed/
+
+# │
+
+# ├── models/
+
+# │   ├── best\_model.joblib
+
+# │   ├── preprocessor.joblib
+
+# │   ├── shap\_summary.png
+
+# │   └── shap\_single\_customer.png
+
+# │
+
+# ├── src/
+
+# │   ├── data\_preprocessing.py
+
+# │   ├── feature\_engineering.py
+
+# │   ├── train.py
+
+# │   ├── evaluate.py
+
+# │   └── explain.py
+
+# │
+
+# ├── requirements.txt
+
+# ├── .gitignore
+
+# └── README.md
+
+# ```
+
+# 
+
+# > Dataset files, trained model artifacts, virtual environments, and Python cache files are excluded from GitHub where appropriate.
+
+# 
+
+# \---
+
+# 
+
+# \# 🛠️ Technologies Used
+
+# 
+
+# \### Programming
+
+# 
+
+# \* Python
+
+# 
+
+# \### Data Science
+
+# 
+
+# \* Pandas
+
+# \* NumPy
+
+# \* Scikit-learn
+
+# 
+
+# \### Machine Learning
+
+# 
+
+# \* Logistic Regression
+
+# \* Random Forest
+
+# \* XGBoost
+
+# \* LightGBM
+
+# 
+
+# \### Explainable AI
+
+# 
+
+# \* SHAP
+
+# 
+
+# \### Visualization
+
+# 
+
+# \* Matplotlib
+
+# 
+
+# \### Deployment
+
+# 
+
+# \* Streamlit
+
+# 
+
+# \### Development
+
+# 
+
+# \* Git
+
+# \* GitHub
+
+# 
+
+# \---
+
+# 
+
+# \# 💻 Installation
+
+# 
+
+# \## 1. Clone the repository
+
+# 
+
+# ```bash
+
+# git clone https://github.com/SaiLokesh9828/Customer\_churn\_prediction.git
+
+# cd Customer\_churn\_prediction
+
+# ```
+
+# 
+
+# \---
+
+# 
+
+# \## 2. Create a virtual environment
+
+# 
+
+# \### Windows
+
+# 
+
+# ```bash
+
+# python -m venv venv
+
+# ```
+
+# 
+
+# Activate it:
+
+# 
+
+# ```bash
+
+# venv\\Scripts\\activate
+
+# ```
+
+# 
+
+# \---
+
+# 
+
+# \## 3. Install dependencies
+
+# 
+
+# ```bash
+
+# pip install -r requirements.txt
+
+# ```
+
+# 
+
+# \---
+
+# 
+
+# \# ▶️ Running the Project
+
+# 
+
+# \## Step 1 — Prepare the data
+
+# 
+
+# Place the dataset at:
+
+# 
+
+# ```text
+
+# data/raw/telco\_churn.csv
+
+# ```
+
+# 
+
+# Then run:
+
+# 
+
+# ```bash
+
+# python src/data\_preprocessing.py
+
+# ```
+
+# 
+
+# \---
+
+# 
+
+# \## Step 2 — Train the models
+
+# 
+
+# ```bash
+
+# python src/train.py
+
+# ```
+
+# 
+
+# This trains and compares the available models and saves the selected model.
+
+# 
+
+# \---
+
+# 
+
+# \## Step 3 — Evaluate the model
+
+# 
+
+# ```bash
+
+# python src/evaluate.py
+
+# ```
+
+# 
+
+# This generates evaluation metrics and visualization artifacts.
+
+# 
+
+# \---
+
+# 
+
+# \## Step 4 — Generate SHAP explanations
+
+# 
+
+# ```bash
+
+# python src/explain.py
+
+# ```
+
+# 
+
+# This generates:
+
+# 
+
+# ```text
+
+# models/shap\_summary.png
+
+# models/shap\_single\_customer.png
+
+# ```
+
+# 
+
+# \---
+
+# 
+
+# \## Step 5 — Launch the application
+
+# 
+
+# ```bash
+
+# python -m streamlit run app/streamlit\_app.py
+
+# ```
+
+# 
+
+# The application will be available at:
+
+# 
+
+# ```text
+
+# http://localhost:8501
+
+# ```
+
+# 
+
+# \---
+
+# 
+
+# \# 📌 Key Features
+
+# 
+
+# \* ✅ End-to-end ML pipeline
+
+# \* ✅ Data preprocessing
+
+# \* ✅ Feature engineering
+
+# \* ✅ Multiple model comparison
+
+# \* ✅ Hyperparameter tuning
+
+# \* ✅ Cross-validation
+
+# \* ✅ Churn probability prediction
+
+# \* ✅ SHAP explainability
+
+# \* ✅ Customer-level risk prediction
+
+# \* ✅ Interactive Streamlit interface
+
+# \* ✅ Reproducible project structure
+
+# 
+
+# \---
+
+# 
+
+# \# 💡 Business Use Case
+
+# 
+
+# A telecom company could use this system to identify customers who have a high probability of churn.
+
+# 
+
+# For example:
+
+# 
+
+# ```text
+
+# Customer
+
+# &#x20;  ↓
+
+# Customer information
+
+# &#x20;  ↓
+
+# ML model
+
+# &#x20;  ↓
+
+# Churn probability
+
+# &#x20;  ↓
+
+# Risk classification
+
+# &#x20;  ↓
+
+# Retention strategy
+
+# ```
+
+# 
+
+# High-risk customers could potentially be targeted with:
+
+# 
+
+# \* Personalized offers
+
+# \* Customer support
+
+# \* Service upgrades
+
+# \* Contract incentives
+
+# \* Retention campaigns
+
+# 
+
+# \---
+
+# 
+
+# \# ⚠️ Disclaimer
+
+# 
+
+# This project is intended for educational and portfolio purposes.
+
+# 
+
+# Predictions generated by the model are estimates and should not be treated as guaranteed outcomes or as the sole basis for business decisions.
+
+# 
+
+# \---
+
+# 
+
+# \# 👨‍💻 Author
+
+# 
+
+# \*\*Sai Lokesh\*\*
+
+# 
+
+# B.Tech Computer Science / AI-ML
+
+# 
+
+# Interested in:
+
+# 
+
+# \* Machine Learning
+
+# \* Data Science
+
+# \* AI Engineering
+
+# \* Explainable AI
+
+# \* Production ML Systems
+
+# 
+
+# \---
+
+# 
+
+# \## ⭐ If you found this project useful
+
+# 
+
+# Consider giving the repository a ⭐ on GitHub.
+
+
+
